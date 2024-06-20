@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExpensesApi.Models
+namespace ExpensesApi.Models.Entities
 {
     public partial class UserAccount
     {
         public int UserId { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string Username { get; set; } = null!;
+        public string UserName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;
         public string? FirstName { get; set; }

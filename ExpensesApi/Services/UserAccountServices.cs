@@ -1,8 +1,9 @@
 ﻿using ExpensesApi.Interfaces;
-using ExpensesApi.Models;
 using ExpensesApi.Models.Context;
+using ExpensesApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Principal;
 
 namespace ExpensesApi.Services
 {
@@ -30,21 +31,15 @@ namespace ExpensesApi.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(UserAccount userAccount)
+        public async Task Update()
         {
-            _context.UserAccounts.Update(userAccount);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(UserAccount userAccount)
         {
-            var account = await _context.UserAccounts.FindAsync(id);
-
-            if (account != null)
-            {
-                _context.UserAccounts.Remove(account);
-                await _context.SaveChangesAsync();
-            }
+            _context.UserAccounts.Remove(userAccount);
+            await _context.SaveChangesAsync();
         }
     }
 }

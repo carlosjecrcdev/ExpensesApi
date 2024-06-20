@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ExpensesApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -111,7 +112,7 @@ namespace ExpensesApi.Models.Context
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.UserName).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

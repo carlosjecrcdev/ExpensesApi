@@ -1,8 +1,11 @@
-using ExpensesApi.Filters;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Middleware;
 using ExpensesApi.Models.Context;
+using ExpensesApi.Models.Mapping;
 using ExpensesApi.Services;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +16,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSqlServer<ExpensesContext>(builder.Configuration.GetConnectionString("ExpensesConnection"));
 builder.Services.AddScoped<IUserAccountServices,UserAccountServices>();
+builder.Services.AddScoped<IBudgetServices, BudgetServices>();
+builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<ValidationFilter>();
-});
+builder.Services.AddAutoMapper(typeof(UserAccountProfile));
+builder.Services.AddAutoMapper(typeof(BudgetProfile));
+builder.Services.AddAutoMapper(typeof(CategoryProfile));
 
 var app = builder.Build();
 
@@ -28,6 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

@@ -2,36 +2,36 @@
 
 namespace ExpensesApi.Interfaces
 {
-    public interface IUserAccountServices
+    public interface ICategoryServices
     {
         /// <summary>
-        /// Get All UserAccounts
+        /// Get All Category
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<UserAccount>> GetAll();
+        Task<IEnumerable<Category>> GetAll();
         /// <summary>
-        /// Get UserAccount By Id
+        /// Get Category By Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<UserAccount?> GetById(int id);
+        Task<Category?> GetById(int id);
         /// <summary>
-        /// Create new UserAccouunt
+        /// Create new Category
         /// </summary>
-        /// <param name="userAccount"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
-        Task Create(UserAccount userAccount);
+        Task Create(Category category);
         /// <summary>
-        /// Update UserAccount
+        /// Update Category
         /// </summary>
-        /// <param name="userAccount"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
         Task Update();
         /// <summary>
-        /// Delete UserAccount
+        /// Delete Category
         /// </summary>
-        /// <param name="userAccount"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
-        Task Delete(UserAccount userAccount);
+        Task Delete(Category category);
     }
 }

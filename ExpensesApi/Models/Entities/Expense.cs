@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ExpensesApi.Models
+namespace ExpensesApi.Models.Entities
 {
     public partial class Expense
     {

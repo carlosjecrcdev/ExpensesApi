@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ExpensesApi.Models
+﻿namespace ExpensesApi.Models.Dtos
 {
-    public partial class Budget
+    public class BudgetDto
     {
-        public int BudgetId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public decimal Amount { get; set; }
         public DateTime StartDate { get; set; }

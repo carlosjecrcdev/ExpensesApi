@@ -11,10 +11,10 @@ namespace ExpensesApi.Models.Mapping
         /// </summary>
         public BudgetProfile()
         {
-            CreateMap<ExpenseDto, Budget>().
+            CreateMap<BudgetDto, Budget>().
                ForMember(d => d.BudgetId, o => o.MapFrom(u => u.Id));
 
-            CreateMap<Budget, ExpenseDto>().
+            CreateMap<Budget, BudgetDto>().
                ForMember(d => d.Id, o => o.MapFrom(u => u.BudgetId));
         }          
     }

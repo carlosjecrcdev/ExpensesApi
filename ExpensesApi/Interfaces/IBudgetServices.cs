@@ -1,4 +1,5 @@
-﻿using ExpensesApi.Models.Entities;
+﻿using ExpensesApi.Models.Dtos;
+using ExpensesApi.Models.Entities;
 
 namespace ExpensesApi.Interfaces
 {

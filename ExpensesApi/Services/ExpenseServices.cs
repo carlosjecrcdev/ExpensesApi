@@ -35,9 +35,9 @@ namespace ExpensesApi.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Expense expense)
+        public async Task Delete(Expense category)
         {
-            _context.Expenses.Remove(expense);
+            _context.Expenses.Remove(category);
             await _context.SaveChangesAsync();
         }
     }

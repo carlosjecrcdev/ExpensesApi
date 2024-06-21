@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesApi.Controllers
@@ -32,7 +32,7 @@ namespace ExpensesApi.Controllers
             var category = await _categoryServices.GetById(id);
 
             if (category == null)
-                throw new KeyNotFoundException($"Category no se encontro");
+                throw new KeyNotFoundException($"Category not found");
 
             CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
 
@@ -42,6 +42,14 @@ namespace ExpensesApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CategoryDto categoryDto)
         {
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+
+                throw new ApiExceptions(messages);
+            }
             Category category = _mapper.Map<Category>(categoryDto);
             await _categoryServices.Create(category);
             return CreatedAtAction(nameof(GetById), new { id = category.CategoryId }, category);
@@ -50,13 +58,21 @@ namespace ExpensesApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CategoryDto categoryDto)
         {
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+
+                throw new ApiExceptions(messages);
+            }
             if (categoryDto.Id != id)
-                throw new KeyNotFoundException($"Id no coincide");
+                throw new KeyNotFoundException($"Id is diferent");
 
             var category = await _categoryServices.GetById(id);
 
             if (category == null)
-                throw new KeyNotFoundException($"Category no se encontro");
+                throw new KeyNotFoundException($"Category not found");
 
             _mapper.Map(categoryDto, category);
 
@@ -70,7 +86,7 @@ namespace ExpensesApi.Controllers
             var categoryToDelete = await _categoryServices.GetById(id);
 
             if (categoryToDelete == null)
-                throw new KeyNotFoundException($"Category no se encontro");
+                throw new KeyNotFoundException($"Category not found");
 
             await _categoryServices.Delete(categoryToDelete);
             return Ok();

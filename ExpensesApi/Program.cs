@@ -5,12 +5,18 @@ using ExpensesApi.Models.Mapping;
 using ExpensesApi.Services;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using ExpensesApi.Models.Dtos;
+using ExpensesApi.Models.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,6 +25,12 @@ builder.Services.AddScoped<IUserAccountServices,UserAccountServices>();
 builder.Services.AddScoped<IBudgetServices, BudgetServices>();
 builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<IExpenseServices, ExpenseServices>();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddScoped<IValidator<UserAccountDto>, UserAccountValidator>();
+builder.Services.AddScoped<IValidator<ExpenseDto>,ExpenseValidator>();
+builder.Services.AddScoped<IValidator<CategoryDto>, CategoryValidator>();
+builder.Services.AddScoped<IValidator<BudgetDto>, BudgetValidator>();
 
 builder.Services.AddAutoMapper(typeof(UserAccountProfile));
 builder.Services.AddAutoMapper(typeof(BudgetProfile));

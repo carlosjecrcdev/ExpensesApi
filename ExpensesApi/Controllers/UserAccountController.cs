@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
@@ -32,7 +33,7 @@ namespace ExpensesApi.Controllers
             var user = await _userAccountServices.GetById(id);
 
             if (user == null)
-                throw new KeyNotFoundException($"UserAccount no se encontro");
+                throw new KeyNotFoundException($"UserAccount not found");
 
             UserAccountDto userDto = _mapper.Map<UserAccountDto>(user);
 
@@ -42,6 +43,14 @@ namespace ExpensesApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(UserAccountDto userDto)
         {
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+
+                throw new ApiExceptions(messages);
+            }
             UserAccount user = _mapper.Map<UserAccount>(userDto);
             await _userAccountServices.Create(user);
             return CreatedAtAction(nameof(GetById),new {id = user.UserId}, user);
@@ -50,13 +59,22 @@ namespace ExpensesApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UserAccountDto userDto)
         {
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+
+                throw new ApiExceptions(messages);
+            }
+
             if (userDto.Id != id)
-                throw new KeyNotFoundException($"Id no coincide");
+                throw new KeyNotFoundException($"Id is diferent");
 
             var user = await _userAccountServices.GetById(id);
 
             if (user == null)
-                throw new KeyNotFoundException($"UserAccount no se encontro");
+                throw new KeyNotFoundException($"UserAccount not found");
 
             _mapper.Map(userDto, user);
             await _userAccountServices.Update();
@@ -69,7 +87,7 @@ namespace ExpensesApi.Controllers
             var userToUpdate = await _userAccountServices.GetById(id);
 
             if (userToUpdate == null)
-                throw new KeyNotFoundException($"UserAccount no se encontro");
+                throw new KeyNotFoundException($"UserAccount not found");
 
             await _userAccountServices.Delete(userToUpdate);
             return Ok();

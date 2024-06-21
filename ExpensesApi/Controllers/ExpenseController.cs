@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
@@ -22,20 +23,20 @@ namespace ExpensesApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Expense>> Get()
+        public async Task<IEnumerable<ExpenseDto>> Get()
         {
-            return _mapper.Map<IEnumerable<Expense>>(await _expenseServices.GetAll());
+            return _mapper.Map<IEnumerable<ExpenseDto>>(await _expenseServices.GetAll());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Expense>> GetById(int id)
+        public async Task<ActionResult<ExpenseDto>> GetById(int id)
         {
             var expense = await _expenseServices.GetById(id);
 
             if (expense == null)
-                throw new KeyNotFoundException($"Expense no se encontro");
+                throw new KeyNotFoundException($"Expense not found");
 
-            ExpenseDto expenseDto = _mapper.Map<ExpenseDto>(expense);
+            BudgetDto expenseDto = _mapper.Map<BudgetDto>(expense);
 
             return Ok(expenseDto);
         }
@@ -43,6 +44,14 @@ namespace ExpensesApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ExpenseDto expenseDto)
         {
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+
+                throw new ApiExceptions(messages);
+            }
             Expense expense = _mapper.Map<Expense>(expenseDto);
             await _expenseServices.Create(expense);
             return CreatedAtAction(nameof(GetById), new { id = expense.ExpenseId }, expense);
@@ -51,13 +60,21 @@ namespace ExpensesApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ExpenseDto expenseDto)
         {
+            if (!ModelState.IsValid)
+            {
+                string messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));
+
+                throw new ApiExceptions(messages);
+            }
             if (expenseDto.Id != id)
-                throw new KeyNotFoundException($"Id no coincide");
+                throw new KeyNotFoundException($"Id is diferent");
 
             var expense = await _expenseServices.GetById(id);
 
             if (expense == null)
-                throw new KeyNotFoundException($"Expense no se encontro");
+                throw new KeyNotFoundException($"Expense not found");
 
             _mapper.Map(expenseDto, expense);
 
@@ -71,7 +88,7 @@ namespace ExpensesApi.Controllers
             var expenseToDelete = await _expenseServices.GetById(id);
 
             if (expenseToDelete == null)
-                throw new KeyNotFoundException($"Expense no se encontro");
+                throw new KeyNotFoundException($"Expense not found");
 
             await _expenseServices.Delete(expenseToDelete);
             return Ok();

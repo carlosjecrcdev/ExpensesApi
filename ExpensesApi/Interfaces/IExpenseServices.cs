@@ -2,35 +2,35 @@
 
 namespace ExpensesApi.Interfaces
 {
-    public interface IBudgetServices
+    public interface IExpenseServices
     {
         /// <summary>
         /// Get All Budget
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<Budget>> GetAll();
+        Task<IEnumerable<Expense>> GetAll();
         /// <summary>
-        /// Get Budget By Id
+        /// Get Expense By Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<Budget?> GetById(int id);
+        Task<Expense?> GetById(int id);
         /// <summary>
-        /// Create new Budget
+        /// Create new Expense
         /// </summary>
-        /// <param name="budget"></param>
+        /// <param name="expense"></param>
         /// <returns></returns>
-        Task Create(Budget budget);
+        Task Create(Expense expense);
         /// <summary>
-        /// Update Budget
+        /// Update Expense
         /// </summary>
         /// <returns></returns>
         Task Update();
         /// <summary>
         /// Delete Budget
         /// </summary>
-        /// <param name="budget"></param>
+        /// <param name="expense"></param>
         /// <returns></returns>
-        Task Delete(Budget budget);
+        Task Delete(Expense expense);
     }
 }

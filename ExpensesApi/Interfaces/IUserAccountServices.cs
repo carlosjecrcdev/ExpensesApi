@@ -24,7 +24,6 @@ namespace ExpensesApi.Interfaces
         /// <summary>
         /// Update UserAccount
         /// </summary>
-        /// <param name="userAccount"></param>
         /// <returns></returns>
         Task Update();
         /// <summary>

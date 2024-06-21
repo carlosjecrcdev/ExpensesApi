@@ -24,7 +24,6 @@ namespace ExpensesApi.Interfaces
         /// <summary>
         /// Update Category
         /// </summary>
-        /// <param name="category"></param>
         /// <returns></returns>
         Task Update();
         /// <summary>

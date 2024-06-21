@@ -18,10 +18,12 @@ builder.Services.AddSqlServer<ExpensesContext>(builder.Configuration.GetConnecti
 builder.Services.AddScoped<IUserAccountServices,UserAccountServices>();
 builder.Services.AddScoped<IBudgetServices, BudgetServices>();
 builder.Services.AddScoped<ICategoryServices, CategoryServices>();
+builder.Services.AddScoped<IExpenseServices, ExpenseServices>();
 
 builder.Services.AddAutoMapper(typeof(UserAccountProfile));
 builder.Services.AddAutoMapper(typeof(BudgetProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
+builder.Services.AddAutoMapper(typeof(ExpenseServices));
 
 var app = builder.Build();
 

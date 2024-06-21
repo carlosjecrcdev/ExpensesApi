@@ -22,26 +22,26 @@ namespace ExpensesApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<BudgetDto>> Get()
+        public async Task<IEnumerable<ExpenseDto>> Get()
         {
-            return _mapper.Map<IEnumerable<BudgetDto>>(await _budgetServices.GetAll());
+            return _mapper.Map<IEnumerable<ExpenseDto>>(await _budgetServices.GetAll());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BudgetDto>> GetById(int id)
+        public async Task<ActionResult<ExpenseDto>> GetById(int id)
         {
             var budget = await _budgetServices.GetById(id);
 
             if (budget == null)
                 throw new KeyNotFoundException($"Budget no se encontro");
 
-            BudgetDto userDto = _mapper.Map<BudgetDto>(budget);
+            ExpenseDto userDto = _mapper.Map<ExpenseDto>(budget);
 
             return Ok(userDto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BudgetDto budgetDto)
+        public async Task<IActionResult> Create(ExpenseDto budgetDto)
         {
             Budget budget = _mapper.Map<Budget>(budgetDto);
             await _budgetServices.Create(budget);
@@ -49,7 +49,7 @@ namespace ExpensesApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, BudgetDto budgetDto)
+        public async Task<IActionResult> Update(int id, ExpenseDto budgetDto)
         {
             if (budgetDto.Id != id)
                 throw new KeyNotFoundException($"Id no coincide");
@@ -76,6 +76,5 @@ namespace ExpensesApi.Controllers
             await _budgetServices.Delete(budgetToDelete);
             return Ok();
         }
-
     }
 }

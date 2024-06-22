@@ -4,12 +4,15 @@ using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
+
     public class UserAccountController : ControllerBase
     {
         private readonly IUserAccountServices _userAccountServices;
@@ -30,12 +33,8 @@ namespace ExpensesApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserAccountDto>> GetById(int id)
         {
-            var user = await _userAccountServices.GetById(id);
-
-            if (user == null)
-                throw new KeyNotFoundException($"UserAccount not found");
-
-            UserAccountDto userDto = _mapper.Map<UserAccountDto>(user);
+            var user = await _userAccountServices.GetById(id)
+                ?? throw new KeyNotFoundException($"UserAccount not found");                
 
             return Ok(user);
         }
@@ -71,10 +70,8 @@ namespace ExpensesApi.Controllers
             if (userDto.Id != id)
                 throw new KeyNotFoundException($"Id is diferent");
 
-            var user = await _userAccountServices.GetById(id);
-
-            if (user == null)
-                throw new KeyNotFoundException($"UserAccount not found");
+            var user = await _userAccountServices.GetById(id)
+                ?? throw new KeyNotFoundException($"UserAccount not found");
 
             _mapper.Map(userDto, user);
             await _userAccountServices.Update();
@@ -84,10 +81,8 @@ namespace ExpensesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var userToUpdate = await _userAccountServices.GetById(id);
-
-            if (userToUpdate == null)
-                throw new KeyNotFoundException($"UserAccount not found");
+            var userToUpdate = await _userAccountServices.GetById(id)
+                           ?? throw new KeyNotFoundException($"UserAccount not found");
 
             await _userAccountServices.Delete(userToUpdate);
             return Ok();

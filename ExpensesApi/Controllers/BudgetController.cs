@@ -3,14 +3,14 @@ using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
-using ExpensesApi.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class BudgetController : ControllerBase
     {
         private readonly IBudgetServices _budgetServices;
@@ -31,10 +31,8 @@ namespace ExpensesApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BudgetDto>> GetById(int id)
         {
-            var budget = await _budgetServices.GetById(id);
-
-            if (budget == null)
-                throw new KeyNotFoundException($"Budget not found");
+            var budget = await _budgetServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Budget not found");
 
             BudgetDto userDto = _mapper.Map<BudgetDto>(budget);
 
@@ -71,10 +69,8 @@ namespace ExpensesApi.Controllers
             if (budgetDto.Id != id)
                 throw new KeyNotFoundException($"Id is diferent");
 
-            var budget = await _budgetServices.GetById(id);
-
-            if (budget == null)
-                throw new KeyNotFoundException($"Budget not found");
+            var budget = await _budgetServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Budget not found");
 
             _mapper.Map(budgetDto, budget);
 
@@ -85,10 +81,8 @@ namespace ExpensesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var budgetToDelete = await _budgetServices.GetById(id);
-
-            if (budgetToDelete == null)
-                throw new KeyNotFoundException($"Budget not found");
+            var budgetToDelete = await _budgetServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Budget not found");
 
             await _budgetServices.Delete(budgetToDelete);
             return Ok();

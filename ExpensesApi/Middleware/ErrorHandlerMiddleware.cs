@@ -50,15 +50,15 @@ namespace ExpensesApi.Middleware
             var response = context.Response;
             response.ContentType = "application/json";
 
-            switch(error)
+            var statusCode = error switch
             {
-                case ApiExceptions e:
-                    response.StatusCode = (int)HttpStatusCode.BadRequest; break;
-                case KeyNotFoundException e:
-                    response.StatusCode = (int)HttpStatusCode.NotFound; break;
-                default:
-                    response.StatusCode = (int)HttpStatusCode.InternalServerError; break;
-            }
+                ApiExceptions => (int)HttpStatusCode.BadRequest,
+                KeyNotFoundException => (int)HttpStatusCode.NotFound,
+                _ => (int)HttpStatusCode.InternalServerError
+            };
+
+            response.StatusCode = statusCode;
+
             var result = JsonSerializer.Serialize(new { message = error?.Message });
             await response.WriteAsync(result);
         }

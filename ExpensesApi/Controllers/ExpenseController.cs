@@ -3,14 +3,14 @@ using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
-using ExpensesApi.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseServices _expenseServices;
@@ -31,10 +31,8 @@ namespace ExpensesApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ExpenseDto>> GetById(int id)
         {
-            var expense = await _expenseServices.GetById(id);
-
-            if (expense == null)
-                throw new KeyNotFoundException($"Expense not found");
+            var expense = await _expenseServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Expense not found");
 
             BudgetDto expenseDto = _mapper.Map<BudgetDto>(expense);
 
@@ -71,10 +69,8 @@ namespace ExpensesApi.Controllers
             if (expenseDto.Id != id)
                 throw new KeyNotFoundException($"Id is diferent");
 
-            var expense = await _expenseServices.GetById(id);
-
-            if (expense == null)
-                throw new KeyNotFoundException($"Expense not found");
+            var expense = await _expenseServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Expense not found");
 
             _mapper.Map(expenseDto, expense);
 
@@ -85,10 +81,8 @@ namespace ExpensesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var expenseToDelete = await _expenseServices.GetById(id);
-
-            if (expenseToDelete == null)
-                throw new KeyNotFoundException($"Expense not found");
+            var expenseToDelete = await _expenseServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Expense not found");
 
             await _expenseServices.Delete(expenseToDelete);
             return Ok();

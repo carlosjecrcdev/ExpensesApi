@@ -3,12 +3,14 @@ using ExpensesApi.Exceptions;
 using ExpensesApi.Interfaces;
 using ExpensesApi.Models.Dtos;
 using ExpensesApi.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryServices _categoryServices;
@@ -29,10 +31,8 @@ namespace ExpensesApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetById(int id)
         {
-            var category = await _categoryServices.GetById(id);
-
-            if (category == null)
-                throw new KeyNotFoundException($"Category not found");
+            var category = await _categoryServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Category not found");
 
             CategoryDto categoryDto = _mapper.Map<CategoryDto>(category);
 
@@ -69,10 +69,8 @@ namespace ExpensesApi.Controllers
             if (categoryDto.Id != id)
                 throw new KeyNotFoundException($"Id is diferent");
 
-            var category = await _categoryServices.GetById(id);
-
-            if (category == null)
-                throw new KeyNotFoundException($"Category not found");
+            var category = await _categoryServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Category not found");
 
             _mapper.Map(categoryDto, category);
 
@@ -83,10 +81,8 @@ namespace ExpensesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var categoryToDelete = await _categoryServices.GetById(id);
-
-            if (categoryToDelete == null)
-                throw new KeyNotFoundException($"Category not found");
+            var categoryToDelete = await _categoryServices.GetById(id)
+                ?? throw new KeyNotFoundException($"Category not found");
 
             await _categoryServices.Delete(categoryToDelete);
             return Ok();

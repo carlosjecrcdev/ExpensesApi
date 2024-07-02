@@ -62,7 +62,17 @@ builder.Services.AddAutoMapper(typeof(BudgetProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
 builder.Services.AddAutoMapper(typeof(ExpenseServices));
 
+builder.Services.AddCors(op =>
+{
+    op.AddDefaultPolicy(app =>
+    {
+        app.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 if (app.Environment.IsDevelopment())
 {

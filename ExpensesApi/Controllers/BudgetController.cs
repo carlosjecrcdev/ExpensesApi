@@ -23,26 +23,36 @@ namespace ExpensesApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<BudgetDto>> Get()
+        public async Task<ActionResult<ApiResponse<IEnumerable<BudgetDto>>>> Get()
         {
-            return _mapper.Map<IEnumerable<BudgetDto>>(await _budgetServices.GetAll());
+            var budgets = _mapper.Map<IEnumerable<BudgetDto>>(await _budgetServices.GetAll());
+
+            return Ok(new ApiResponse<IEnumerable<BudgetDto>>
+            {
+                Success = true,
+                Data = budgets
+            });
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BudgetDto>> GetById(int id)
+        public async Task<ActionResult<ApiResponse<BudgetDto>>> GetById(int id)
         {
             var budget = await _budgetServices.GetById(id)
-                ?? throw new KeyNotFoundException($"Budget not found");
+                ?? throw new KeyNotFoundException("Budget not found");
 
-            BudgetDto userDto = _mapper.Map<BudgetDto>(budget);
+            var budgetDto = _mapper.Map<BudgetDto>(budget);
 
-            return Ok(userDto);
+            return Ok(new ApiResponse<BudgetDto>
+            {
+                Success = true,
+                Data = budgetDto
+            });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BudgetDto budgetDto)
+        public async Task<ActionResult<ApiResponse<BudgetDto>>> Create(BudgetDto budgetDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 string messages = string.Join("; ", ModelState.Values
                                         .SelectMany(x => x.Errors)
@@ -50,15 +60,21 @@ namespace ExpensesApi.Controllers
 
                 throw new ApiExceptions(messages);
             }
-            Budget budget = _mapper.Map<Budget>(budgetDto);
+
+            var budget = _mapper.Map<Budget>(budgetDto);
             await _budgetServices.Create(budget);
-            return CreatedAtAction(nameof(GetById), new { id = budget.BudgetId }, budget);
+
+            return CreatedAtAction(nameof(GetById), new { id = budget.BudgetId }, new ApiResponse<BudgetDto>
+            {
+                Success = true,
+                Data = _mapper.Map<BudgetDto>(budget)
+            });
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, BudgetDto budgetDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 string messages = string.Join("; ", ModelState.Values
                                         .SelectMany(x => x.Errors)
@@ -66,11 +82,12 @@ namespace ExpensesApi.Controllers
 
                 throw new ApiExceptions(messages);
             }
+
             if (budgetDto.Id != id)
-                throw new KeyNotFoundException($"Id is diferent");
+                throw new KeyNotFoundException("Id is different");
 
             var budget = await _budgetServices.GetById(id)
-                ?? throw new KeyNotFoundException($"Budget not found");
+                ?? throw new KeyNotFoundException("Budget not found");
 
             _mapper.Map(budgetDto, budget);
 
@@ -79,13 +96,18 @@ namespace ExpensesApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult<ApiResponse<string>>> Delete(int id)
         {
             var budgetToDelete = await _budgetServices.GetById(id)
-                ?? throw new KeyNotFoundException($"Budget not found");
+                ?? throw new KeyNotFoundException("Budget not found");
 
             await _budgetServices.Delete(budgetToDelete);
-            return Ok();
+
+            return Ok(new ApiResponse<string>
+            {
+                Success = true,
+                Data = "Budget deleted successfully"
+            });
         }
     }
 }

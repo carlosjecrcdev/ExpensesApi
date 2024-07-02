@@ -1,5 +1,7 @@
 ﻿
 using ExpensesApi.Exceptions;
+using ExpensesApi.Models.Dtos;
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
@@ -45,6 +47,12 @@ namespace ExpensesApi.Middleware
         /// <returns></returns>
         private async Task HandleExceptionAsync(HttpContext context, Exception error)
         {
+            var apiResponse = new ApiResponse<string>
+            {
+                Success = false,
+                Message = error.Message
+            };
+
             _logger.LogError(error, "An unexpected error occurred.");
 
             var response = context.Response;
@@ -59,8 +67,9 @@ namespace ExpensesApi.Middleware
 
             response.StatusCode = statusCode;
 
-            var result = JsonSerializer.Serialize(new { message = error?.Message });
-            await response.WriteAsync(result);
+            apiResponse.Message = JsonSerializer.Serialize(new { message = error?.Message });
+
+            await response.WriteAsJsonAsync(apiResponse);
         }
     }
 }
